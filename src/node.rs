@@ -30,6 +30,11 @@ pub enum MeasureFunc {
     /// Stores a boxed function
     #[cfg(any(feature = "std", feature = "alloc"))]
     Boxed(Box<dyn Measurable>),
+
+    /// Stores a boxed function
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    BoxedNotSendSync(Box<dyn Fn(Size<Option<f32>>, Size<AvailableSpace>) -> Size<f32>>),
+
 }
 
 /// A tree of UI [`Nodes`](`Node`), suitable for UI layout
@@ -104,6 +109,10 @@ impl LayoutTree for Taffy {
 
             #[cfg(any(feature = "std", feature = "alloc"))]
             MeasureFunc::Boxed(measure) => (measure as &dyn Fn(_, _) -> _)(known_dimensions, available_space),
+
+            #[cfg(any(feature = "std", feature = "alloc"))]
+            MeasureFunc::BoxedNotSendSync(measure) => (measure as &dyn Fn(_, _) -> _)(known_dimensions, available_space),
+
         }
     }
 
